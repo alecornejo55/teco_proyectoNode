@@ -1,5 +1,5 @@
 {
-  "name": "entregable4",
+  "name": "preentrega2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.1"
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "firebase-admin": "^11.0.0",
+    "mongoose": "^6.4.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.16"

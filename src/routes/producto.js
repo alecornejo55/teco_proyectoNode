@@ -1,8 +1,10 @@
 const express = require('express');
 const {Router} = express; 
 const router = Router();
-const { Contenedor } = require('../classes/Classes.js');
-const producto = new Contenedor('./src/files/productos.json');
+const { DaoProduct } = require('../containers/index.js');
+
+const ProductDao = new DaoProduct()
+
 const validarAdministrador = (req, res, next) => {
     const path = req.originalUrl;
     const metodo = req.method;
@@ -21,10 +23,10 @@ router.get('/:id?', async (req, res) => {
         // console.log(id);
         let productos = [];
         if(id == null) {
-            productos = await producto.getAll();
+            productos = await ProductDao.getAll();
         }
         else {
-            productos = await producto.getById(id);
+            productos = await ProductDao.getById(id);
             if(productos === null) {
                 throw new Error('producto no encontrado');
             }
@@ -36,7 +38,7 @@ router.get('/:id?', async (req, res) => {
 });
 
 router.post("/",validarAdministrador, async (req, res) => {
-    const idNuevoProducto = await producto.save(req.body);
+    const idNuevoProducto = await ProductDao.save(req.body);
     res.status(200).json({id: idNuevoProducto});
 });
  
@@ -44,14 +46,14 @@ router.put("/:id", validarAdministrador, async (req, res) => {
     const id = req.params.id;
     const data = req.body;
     // console.log(data);
-    const resProducto = await producto.updateById(id, data);
+    const resProducto = await ProductDao.updateById(id, data);
 
     res.send("Producto actualizado: " + JSON.stringify(resProducto));
 });
 
 router.delete("/:id", validarAdministrador, async (req, res) => {
     const id = req.params.id;
-    await producto.deleteById(id);
+    await ProductDao.deleteById(id);
     res.send("Producto eliminado");
 });
 

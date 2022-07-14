@@ -1,9 +1,10 @@
 const express = require('express');
 const {Router} = express; 
 const router = Router();
-const { Contenedor } = require('../classes/Classes.js');
-const carrito = new Contenedor('./src/files/carrito.json');
-const producto = new Contenedor('./src/files/productos.json');
+const { CarritoDao } = require('../containers/index.js');
+
+const carrito = new CarritoDao();
+
 const validarAdministrador = (req, res, next) => {
     const path = req.originalUrl;
     const metodo = req.method;
@@ -27,8 +28,29 @@ router.delete("/:id", async (req, res) => {
     await carrito.deleteById(id);
     res.send("Carrito eliminado");
 });
- 
+
 // Permite listar todos los productos guardados en el carrito
+router.get('/:id?', async (req, res) => {
+    try {
+        const id = req.params?.id ?? null;
+        // console.log(id);
+        let productos = [];
+        if(id == null) {
+            productos = await carrito.getAll();
+        }
+        else {
+            productos = await carrito.getById(id);
+            // console.log(productos);
+            if(productos === null) {
+                throw new Error('carrito no encontrado');
+            }
+        }
+        res.send(productos);        
+    } catch (error) {
+        res.send({error: error.message})
+    }
+});
+
 router.get('/:id/productos', async (req, res) => {
     try {
         const id = req.params.id;
@@ -36,7 +58,7 @@ router.get('/:id/productos', async (req, res) => {
         if(carritoC === null) {
             throw new Error('carrito no encontrado');
         }
-        res.send(carritoC.productos);        
+        res.send(carritoC.productos ?? carritoC.data.productos);        
     } catch (error) {
         res.status(200).json({error: error.message})
     }
@@ -48,18 +70,15 @@ router.post('/:id/productos', async (req, res) => {
     const productos = req.body;
     try {
         const carritoC = await carrito.getById(idCarrito);
+        // console.log("Init",carritoC);
+
         if(carritoC === null) {
             throw new Error('carrito no encontrado');
         }
-        productos.map(async prod => {
-            const addProducto = await producto.getById(prod.id);
-            if(addProducto !== null) {
-                carritoC.productos.push(addProducto);
-            }
-        });
-        await carrito.updateById(idCarrito, carritoC);
-        // console.log(productos);
-        res.send("OK");
+        await carrito.addProduct(idCarrito, productos);
+
+        res.send({message: "Productos agregados"});
+
     } catch (error) {
         res.send({error: error.message})
     }
@@ -74,12 +93,10 @@ router.delete('/:id/productos/:idProd', async (req, res) => {
         if(carritoC === null) {
             throw new Error('carrito no encontrado');
         }
-        // console.log('id', idProd);
-        const productoC = carritoC.productos.filter(prod => prod.id != idProd);
-        // console.log('Productos', productoC);
-        carritoC.productos = productoC;
-        await carrito.updateById(idCarrito, carritoC);
-        res.send("OK");
+
+        await carrito.deleteProduct(idCarrito, idProd);
+
+        res.send({message: "Producto actualizado"});
     } catch (error) {
         res.send({error: error.message})
     }
