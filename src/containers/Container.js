@@ -1,7 +1,7 @@
 const { MONGO_URI } = require('../config/globals')
 const mongoose = require('mongoose');
 
-class ContainerMongo {
+class Container {
     constructor(model){
         this.model = model;
         // console.log("model", model, "Fin model");
@@ -62,4 +62,4 @@ class ContainerMongo {
     }
 }
 
-module.exports = {ContainerMongo};
+module.exports = { Container };

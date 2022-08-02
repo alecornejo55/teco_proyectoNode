@@ -3,16 +3,14 @@ const app = express();
 const path = require('path');
 const { PORT } = require('./src/config/globals');
 global.ADMIN = true;
-// MONGODB: mongo. FIRESTORE: firestore
 
-const productosRouter = require('./src/routes/producto');
-const carritoRouter = require('./src/routes/carrito');
+const { productRouterApi, cartRouterApi } = require('./src/routes');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/productos', productosRouter);
-app.use('/api/carrito', carritoRouter);
+app.use('/api/product', productRouterApi);
+app.use('/api/cart', cartRouterApi);
 
 /** comodín */
 app.use('*', function(req, res){

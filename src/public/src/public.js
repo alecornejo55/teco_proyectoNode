@@ -16,7 +16,7 @@ form.addEventListener('submit', async (e) => {
             },
             body: JSON.stringify(newProducto)
         }
-        const result = await fetch('/api/productos', options);
+        const result = await fetch('/api/products', options);
         const data = await result.json();
         Swal.fire(
             'Producto guardado',
