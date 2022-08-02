@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const { PORT } = require('./config/globals');
+const { PORT } = require('./src/config/globals');
 global.ADMIN = true;
 // MONGODB: mongo. FIRESTORE: firestore
 
